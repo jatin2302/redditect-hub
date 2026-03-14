@@ -1,6 +1,6 @@
 import {
   LayoutDashboard, ShoppingCart, Package, Wallet, MessageSquare,
-  Users, Settings, Zap, ArrowLeftRight
+  Users, Settings, Zap, ArrowLeftRight, UserCircle
 } from 'lucide-react';
 import { NavLink } from '@/components/NavLink';
 import { useLocation } from 'react-router-dom';
@@ -18,6 +18,7 @@ const clientNav = [
   { title: 'My Orders', url: '/orders', icon: Package },
   { title: 'Wallet', url: '/wallet', icon: Wallet },
   { title: 'Support', url: '/support', icon: MessageSquare },
+  { title: 'My Profile', url: '/profile', icon: UserCircle },
 ];
 
 const adminNav = [
