@@ -1,6 +1,6 @@
+import { useNavigate } from 'react-router-dom';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { Eye, DollarSign } from 'lucide-react';
 
 const clients = [
@@ -12,6 +12,8 @@ const clients = [
 ];
 
 const AdminClients = () => {
+  const navigate = useNavigate();
+
   return (
     <div className="space-y-6">
       <h1 className="text-2xl font-bold text-foreground">Clients</h1>
@@ -47,14 +49,19 @@ const AdminClients = () => {
           <TableBody>
             {clients.map(c => (
               <TableRow key={c.id} className="border-border">
-                <TableCell className="font-medium text-foreground">{c.name}</TableCell>
+                <TableCell
+                  className="font-medium text-primary cursor-pointer hover:underline"
+                  onClick={() => navigate(`/admin/clients/${c.id}`)}
+                >
+                  {c.name}
+                </TableCell>
                 <TableCell className="text-muted-foreground">{c.email}</TableCell>
                 <TableCell className="font-semibold text-foreground">${c.balance.toFixed(2)}</TableCell>
                 <TableCell className="text-foreground">{c.orders}</TableCell>
                 <TableCell className="text-foreground">${c.totalSpent.toFixed(2)}</TableCell>
                 <TableCell className="text-muted-foreground text-sm">{new Date(c.joined).toLocaleDateString()}</TableCell>
                 <TableCell className="flex gap-1">
-                  <Button variant="outline" size="sm"><Eye className="h-3 w-3" /></Button>
+                  <Button variant="outline" size="sm" onClick={() => navigate(`/admin/clients/${c.id}`)}><Eye className="h-3 w-3" /></Button>
                   <Button variant="outline" size="sm"><DollarSign className="h-3 w-3" /></Button>
                 </TableCell>
               </TableRow>

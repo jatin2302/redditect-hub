@@ -11,11 +11,14 @@ import ServicesPage from "./pages/ServicesPage.tsx";
 import ClientOrders from "./pages/ClientOrders.tsx";
 import WalletPage from "./pages/WalletPage.tsx";
 import SupportPage from "./pages/SupportPage.tsx";
+import ClientProfile from "./pages/ClientProfile.tsx";
+import OrderDetailView from "./pages/OrderDetailView.tsx";
 import AdminOrders from "./pages/AdminOrders.tsx";
 import AdminServices from "./pages/AdminServices.tsx";
 import AdminClients from "./pages/AdminClients.tsx";
 import AdminTickets from "./pages/AdminTickets.tsx";
 import AdminSettings from "./pages/AdminSettings.tsx";
+import ClientDetailView from "./pages/ClientDetailView.tsx";
 
 const queryClient = new QueryClient();
 
@@ -34,11 +37,15 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/services" element={<LayoutWrap><ServicesPage /></LayoutWrap>} />
             <Route path="/orders" element={<LayoutWrap><ClientOrders /></LayoutWrap>} />
+            <Route path="/orders/:orderId" element={<LayoutWrap><OrderDetailView /></LayoutWrap>} />
             <Route path="/wallet" element={<LayoutWrap><WalletPage /></LayoutWrap>} />
             <Route path="/support" element={<LayoutWrap><SupportPage /></LayoutWrap>} />
+            <Route path="/profile" element={<LayoutWrap><ClientProfile /></LayoutWrap>} />
             <Route path="/admin/orders" element={<LayoutWrap><AdminOrders /></LayoutWrap>} />
+            <Route path="/admin/orders/:orderId" element={<LayoutWrap><OrderDetailView /></LayoutWrap>} />
             <Route path="/admin/services" element={<LayoutWrap><AdminServices /></LayoutWrap>} />
             <Route path="/admin/clients" element={<LayoutWrap><AdminClients /></LayoutWrap>} />
+            <Route path="/admin/clients/:clientId" element={<LayoutWrap><ClientDetailView /></LayoutWrap>} />
             <Route path="/admin/tickets" element={<LayoutWrap><AdminTickets /></LayoutWrap>} />
             <Route path="/admin/settings" element={<LayoutWrap><AdminSettings /></LayoutWrap>} />
             <Route path="*" element={<NotFound />} />

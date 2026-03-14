@@ -1,6 +1,7 @@
 import { ReactNode } from 'react';
 import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import { AppSidebar } from '@/components/AppSidebar';
+import { ThemeToggle } from '@/components/ThemeToggle';
 
 const DashboardLayout = ({ children }: { children: ReactNode }) => {
   return (
@@ -11,6 +12,7 @@ const DashboardLayout = ({ children }: { children: ReactNode }) => {
           <header className="h-14 flex items-center border-b border-border px-4 bg-card/50 backdrop-blur-sm sticky top-0 z-10">
             <SidebarTrigger className="mr-4" />
             <div className="flex-1" />
+            <ThemeToggle />
           </header>
           <main className="flex-1 p-6 overflow-auto">
             {children}

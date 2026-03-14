@@ -1,9 +1,11 @@
+import { useNavigate } from 'react-router-dom';
 import { orders } from '@/lib/mock-data';
 import StatusBadge from '@/components/StatusBadge';
 import { Progress } from '@/components/ui/progress';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
 const ClientOrders = () => {
+  const navigate = useNavigate();
   const myOrders = orders.filter(o => o.clientId === 'c1');
 
   return (
@@ -29,7 +31,12 @@ const ClientOrders = () => {
           <TableBody>
             {myOrders.map(order => (
               <TableRow key={order.id} className="border-border">
-                <TableCell className="font-mono text-sm text-foreground">{order.id}</TableCell>
+                <TableCell
+                  className="font-mono text-sm text-primary cursor-pointer hover:underline"
+                  onClick={() => navigate(`/orders/${order.id}`)}
+                >
+                  {order.id}
+                </TableCell>
                 <TableCell className="text-foreground">{order.serviceName}</TableCell>
                 <TableCell className="text-muted-foreground text-sm">{order.targetUrl}</TableCell>
                 <TableCell className="text-foreground">{order.quantity.toLocaleString()}</TableCell>
