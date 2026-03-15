@@ -12,10 +12,15 @@ export default {
     },
     extend: {
       fontFamily: {
-        sans: ["Space Grotesk", "system-ui", "sans-serif"],
+        sans: ["IBM Plex Sans", "system-ui", "sans-serif"],
         mono: ["JetBrains Mono", "monospace"],
       },
       colors: {
+        "reddit-orange": "#FF4500",
+        "reddit-blue": "#0079D3",
+        "reddit-dark": "#1A1A1B",
+        upvote: "hsl(var(--upvote))",
+        downvote: "hsl(var(--downvote))",
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",

@@ -8,6 +8,7 @@ import DashboardLayout from "@/components/DashboardLayout";
 import Index from "./pages/Index.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import ServicesPage from "./pages/ServicesPage.tsx";
+import NewOrderPage from "./pages/NewOrderPage.tsx";
 import ClientOrders from "./pages/ClientOrders.tsx";
 import WalletPage from "./pages/WalletPage.tsx";
 import SupportPage from "./pages/SupportPage.tsx";
@@ -36,6 +37,7 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/services" element={<LayoutWrap><ServicesPage /></LayoutWrap>} />
+            <Route path="/new-order" element={<LayoutWrap><NewOrderPage /></LayoutWrap>} />
             <Route path="/orders" element={<LayoutWrap><ClientOrders /></LayoutWrap>} />
             <Route path="/orders/:orderId" element={<LayoutWrap><OrderDetailView /></LayoutWrap>} />
             <Route path="/wallet" element={<LayoutWrap><WalletPage /></LayoutWrap>} />

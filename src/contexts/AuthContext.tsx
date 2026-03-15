@@ -5,6 +5,7 @@ interface AuthContextType {
   role: UserRole;
   setRole: (role: UserRole) => void;
   userName: string;
+  logout: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -12,9 +13,14 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [role, setRole] = useState<UserRole>('client');
   const userName = role === 'admin' ? 'Admin' : 'John D.';
+  
+  const logout = () => {
+    console.log('Logging out...');
+    window.location.href = '/login'; // Mock logout redirect
+  };
 
   return (
-    <AuthContext.Provider value={{ role, setRole, userName }}>
+    <AuthContext.Provider value={{ role, setRole, userName, logout }}>
       {children}
     </AuthContext.Provider>
   );
