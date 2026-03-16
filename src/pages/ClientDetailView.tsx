@@ -1,9 +1,15 @@
+import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { orders, tickets, transactions } from '@/lib/mock-data';
 import StatusBadge from '@/components/StatusBadge';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { ArrowLeft, Mail, Calendar, DollarSign, Package, MessageSquare } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { ArrowLeft, Mail, Calendar, DollarSign, Package, MessageSquare, PlusCircle } from 'lucide-react';
+import { toast } from 'sonner';
 
 const clients = [
   { id: 'c1', name: 'John D.', email: 'john@example.com', balance: 682.50, orders: 3, totalSpent: 867.50, joined: '2025-12-01' },
@@ -17,6 +23,10 @@ const ClientDetailView = () => {
   const { clientId } = useParams();
   const navigate = useNavigate();
   const client = clients.find(c => c.id === clientId);
+  const [creditAmount, setCreditAmount] = useState('');
+  const [creditType, setCreditType] = useState<'add' | 'deduct'>('add');
+  const [creditOpen, setCreditOpen] = useState(false);
+  const [clientBalance, setClientBalance] = useState(client?.balance ?? 0);
 
   if (!client) {
     return (
@@ -31,7 +41,21 @@ const ClientDetailView = () => {
 
   const clientOrders = orders.filter(o => o.clientId === clientId);
   const clientTickets = tickets.filter(t => t.clientId === clientId);
-  const clientTx = transactions.filter(t => t.clientId === clientId);
+
+  const handleCreditAdjust = () => {
+    const amount = parseFloat(creditAmount);
+    if (!amount || amount <= 0) { toast.error('Enter a valid amount'); return; }
+    if (creditType === 'add') {
+      setClientBalance(prev => prev + amount);
+      toast.success(`Added $${amount.toFixed(2)} to ${client.name}'s balance`);
+    } else {
+      if (amount > clientBalance) { toast.error('Cannot deduct more than current balance'); return; }
+      setClientBalance(prev => prev - amount);
+      toast.success(`Deducted $${amount.toFixed(2)} from ${client.name}'s balance`);
+    }
+    setCreditAmount('');
+    setCreditOpen(false);
+  };
 
   return (
     <div className="space-y-6">
@@ -49,7 +73,7 @@ const ClientDetailView = () => {
         </div>
         <div className="rounded-lg border border-border bg-card p-4 shadow-card">
           <div className="flex items-center gap-2 mb-1"><DollarSign className="h-3.5 w-3.5 text-muted-foreground" /><p className="text-xs text-muted-foreground">Balance</p></div>
-          <p className="text-sm font-semibold text-foreground">${client.balance.toFixed(2)}</p>
+          <p className="text-sm font-semibold text-primary">${clientBalance.toFixed(2)}</p>
         </div>
         <div className="rounded-lg border border-border bg-card p-4 shadow-card">
           <div className="flex items-center gap-2 mb-1"><Package className="h-3.5 w-3.5 text-muted-foreground" /><p className="text-xs text-muted-foreground">Total Spent</p></div>
@@ -59,6 +83,43 @@ const ClientDetailView = () => {
           <div className="flex items-center gap-2 mb-1"><Calendar className="h-3.5 w-3.5 text-muted-foreground" /><p className="text-xs text-muted-foreground">Joined</p></div>
           <p className="text-sm font-medium text-foreground">{new Date(client.joined).toLocaleDateString()}</p>
         </div>
+      </div>
+
+      {/* Manual Credit Adjustment */}
+      <div className="flex items-center gap-3">
+        <Dialog open={creditOpen} onOpenChange={setCreditOpen}>
+          <DialogTrigger asChild>
+            <Button className="bg-primary hover:bg-primary/90 text-primary-foreground gap-2 rounded-xl font-bold">
+              <PlusCircle className="h-4 w-4" /> Adjust Balance
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="bg-card border-border sm:max-w-[400px]">
+            <DialogHeader><DialogTitle className="text-foreground">Adjust Client Balance</DialogTitle></DialogHeader>
+            <div className="space-y-4 pt-2">
+              <div className="text-center">
+                <p className="text-sm text-muted-foreground">Current Balance</p>
+                <p className="text-3xl font-black text-primary font-mono">${clientBalance.toFixed(2)}</p>
+              </div>
+              <div>
+                <Label className="text-foreground">Action</Label>
+                <Select value={creditType} onValueChange={(v: 'add' | 'deduct') => setCreditType(v)}>
+                  <SelectTrigger className="mt-1"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="add">Add Credit</SelectItem>
+                    <SelectItem value="deduct">Deduct Credit</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label className="text-foreground">Amount ($)</Label>
+                <Input type="number" min="0" step="0.01" className="mt-1" placeholder="0.00" value={creditAmount} onChange={e => setCreditAmount(e.target.value)} />
+              </div>
+              <Button className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold" onClick={handleCreditAdjust}>
+                {creditType === 'add' ? 'Add' : 'Deduct'} ${creditAmount || '0.00'}
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
 
       {/* Orders */}

@@ -1,12 +1,14 @@
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { orders } from '@/lib/mock-data';
+import { useAuth } from '@/contexts/AuthContext';
 import StatusBadge from '@/components/StatusBadge';
 import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, ExternalLink, Clock, Package, DollarSign, Target, CalendarDays, Activity, CheckCircle2, ShieldAlert, LockIcon } from 'lucide-react';
 
 const OrderDetailView = () => {
+  const { role } = useAuth();
   const { orderId } = useParams();
   const navigate = useNavigate();
   const order = orders.find(o => o.id === orderId);
@@ -62,9 +64,11 @@ const OrderDetailView = () => {
               <ShieldAlert className="h-4 w-4 text-muted-foreground" /> Report Issue
             </Link>
           </Button>
-          <Button className="bg-primary hover:bg-primary/90 text-white shadow-glow rounded-xl font-black uppercase tracking-widest text-[10px] h-11 px-8">
-            RE-ORDER SERVICE
-          </Button>
+          {role === 'client' && (
+            <Button className="bg-primary hover:bg-primary/90 text-white shadow-glow rounded-xl font-black uppercase tracking-widest text-[10px] h-11 px-8">
+              RE-ORDER SERVICE
+            </Button>
+          )}
         </div>
       </div>
 
