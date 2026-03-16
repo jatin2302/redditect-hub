@@ -64,9 +64,11 @@ const OrderDetailView = () => {
               <ShieldAlert className="h-4 w-4 text-muted-foreground" /> Report Issue
             </Link>
           </Button>
-          <Button className="bg-primary hover:bg-primary/90 text-white shadow-glow rounded-xl font-black uppercase tracking-widest text-[10px] h-11 px-8">
-            RE-ORDER SERVICE
-          </Button>
+          {role === 'client' && (
+            <Button className="bg-primary hover:bg-primary/90 text-white shadow-glow rounded-xl font-black uppercase tracking-widest text-[10px] h-11 px-8">
+              RE-ORDER SERVICE
+            </Button>
+          )}
         </div>
       </div>
 
