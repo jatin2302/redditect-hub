@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { ArrowLeft, ExternalLink, Clock, Package, DollarSign, Target, CalendarDays, Activity, CheckCircle2, ShieldAlert, LockIcon } from 'lucide-react';
 
 const OrderDetailView = () => {
+  const { role } = useAuth();
   const { orderId } = useParams();
   const navigate = useNavigate();
   const order = orders.find(o => o.id === orderId);
