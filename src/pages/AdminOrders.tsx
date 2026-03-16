@@ -7,7 +7,9 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
-import { Search } from 'lucide-react';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Search, Download, CheckSquare } from 'lucide-react';
+import { toast } from 'sonner';
 
 const dateFilters = [
   { label: 'All Time', value: 'all' },
@@ -23,6 +25,7 @@ const AdminOrders = () => {
   const [serviceFilter, setServiceFilter] = useState<string>('all');
   const [dateFilter, setDateFilter] = useState<string>('all');
   const [search, setSearch] = useState('');
+  const [selectedOrders, setSelectedOrders] = useState<string[]>([]);
 
   const uniqueServices = [...new Set(orders.map(o => o.serviceName))];
 
@@ -43,9 +46,47 @@ const AdminOrders = () => {
     return true;
   });
 
+  const toggleSelect = (id: string) => {
+    setSelectedOrders(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);
+  };
+
+  const toggleSelectAll = () => {
+    if (selectedOrders.length === filtered.length) {
+      setSelectedOrders([]);
+    } else {
+      setSelectedOrders(filtered.map(o => o.id));
+    }
+  };
+
+  const handleBulkAction = (action: string) => {
+    if (selectedOrders.length === 0) { toast.error('No orders selected'); return; }
+    toast.success(`${selectedOrders.length} order(s) marked as ${action}`);
+    setSelectedOrders([]);
+  };
+
+  const handleExportCSV = () => {
+    const dataToExport = selectedOrders.length > 0 ? filtered.filter(o => selectedOrders.includes(o.id)) : filtered;
+    const headers = ['Order ID', 'Client', 'Service', 'Quantity', 'Total', 'Status', 'Progress', 'Created'];
+    const rows = dataToExport.map(o => [o.id, o.clientName, o.serviceName, o.quantity, o.totalPrice.toFixed(2), o.status, `${o.progress}%`, o.createdAt]);
+    const csv = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `orders-${new Date().toISOString().split('T')[0]}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+    toast.success(`Exported ${dataToExport.length} orders`);
+  };
+
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold text-foreground">Manage Orders</h1>
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-bold text-foreground">Manage Orders</h1>
+        <Button variant="outline" size="sm" className="gap-2" onClick={handleExportCSV}>
+          <Download className="h-4 w-4" /> Export CSV
+        </Button>
+      </div>
 
       <div className="flex flex-col sm:flex-row gap-3 flex-wrap">
         <div className="relative flex-1 min-w-[200px]">
@@ -81,10 +122,29 @@ const AdminOrders = () => {
         </Select>
       </div>
 
+      {/* Bulk Actions Bar */}
+      {selectedOrders.length > 0 && (
+        <div className="flex items-center gap-3 rounded-lg bg-primary/10 border border-primary/20 p-3">
+          <CheckSquare className="h-4 w-4 text-primary" />
+          <span className="text-sm font-bold text-foreground">{selectedOrders.length} selected</span>
+          <div className="flex gap-2 ml-auto">
+            <Button size="sm" variant="outline" onClick={() => handleBulkAction('in_progress')}>Start Processing</Button>
+            <Button size="sm" variant="outline" onClick={() => handleBulkAction('completed')}>Mark Complete</Button>
+            <Button size="sm" variant="outline" className="text-destructive border-destructive/30 hover:bg-destructive/10" onClick={() => handleBulkAction('cancelled')}>Cancel</Button>
+          </div>
+        </div>
+      )}
+
       <div className="rounded-lg border border-border bg-card shadow-card overflow-auto">
         <Table>
           <TableHeader>
             <TableRow className="border-border hover:bg-transparent">
+              <TableHead className="w-[40px]">
+                <Checkbox
+                  checked={selectedOrders.length === filtered.length && filtered.length > 0}
+                  onCheckedChange={toggleSelectAll}
+                />
+              </TableHead>
               <TableHead className="text-muted-foreground">Order ID</TableHead>
               <TableHead className="text-muted-foreground">Client</TableHead>
               <TableHead className="text-muted-foreground">Service</TableHead>
@@ -97,7 +157,13 @@ const AdminOrders = () => {
           </TableHeader>
           <TableBody>
             {filtered.map(order => (
-              <TableRow key={order.id} className="border-border">
+              <TableRow key={order.id} className={`border-border ${selectedOrders.includes(order.id) ? 'bg-primary/5' : ''}`}>
+                <TableCell>
+                  <Checkbox
+                    checked={selectedOrders.includes(order.id)}
+                    onCheckedChange={() => toggleSelect(order.id)}
+                  />
+                </TableCell>
                 <TableCell
                   className="font-mono text-sm text-primary cursor-pointer hover:underline"
                   onClick={() => navigate(`/admin/orders/${order.id}`)}
@@ -121,7 +187,7 @@ const AdminOrders = () => {
               </TableRow>
             ))}
             {filtered.length === 0 && (
-              <TableRow><TableCell colSpan={8} className="text-center text-muted-foreground py-8">No orders found</TableCell></TableRow>
+              <TableRow><TableCell colSpan={9} className="text-center text-muted-foreground py-8">No orders found</TableCell></TableRow>
             )}
           </TableBody>
         </Table>

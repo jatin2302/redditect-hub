@@ -4,23 +4,29 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogClose } from '@/components/ui/dialog';
+import { Switch } from '@/components/ui/switch';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Plus, Pencil, Star } from 'lucide-react';
 import { toast } from 'sonner';
 
+interface ServiceWithEnabled extends Service {
+  enabled: boolean;
+}
+
 const AdminServices = () => {
-  const [servicesList, setServicesList] = useState<Service[]>(initialServices);
-  const [editService, setEditService] = useState<Service | null>(null);
+  const [servicesList, setServicesList] = useState<ServiceWithEnabled[]>(
+    initialServices.map(s => ({ ...s, enabled: true }))
+  );
+  const [editService, setEditService] = useState<ServiceWithEnabled | null>(null);
   const [editOpen, setEditOpen] = useState(false);
 
-  // Form state for add/edit
   const [form, setForm] = useState({ name: '', category: '', description: '', price: '', unit: '', minOrder: '', maxOrder: '' });
 
   const resetForm = () => setForm({ name: '', category: '', description: '', price: '', unit: '', minOrder: '', maxOrder: '' });
 
-  const openEdit = (s: Service) => {
+  const openEdit = (s: ServiceWithEnabled) => {
     setEditService(s);
     setForm({
       name: s.name,
@@ -36,7 +42,7 @@ const AdminServices = () => {
 
   const handleCreate = () => {
     if (!form.name || !form.price) { toast.error('Name and price are required'); return; }
-    const newService: Service = {
+    const newService: ServiceWithEnabled = {
       id: `s${Date.now()}`,
       name: form.name,
       category: form.category,
@@ -46,6 +52,7 @@ const AdminServices = () => {
       minOrder: parseInt(form.minOrder) || 1,
       maxOrder: parseInt(form.maxOrder) || 1000,
       estimatedTime: '1-3 days',
+      enabled: true,
     };
     setServicesList(prev => [...prev, newService]);
     resetForm();
@@ -70,6 +77,17 @@ const AdminServices = () => {
     toast.success('Service updated!');
   };
 
+  const toggleEnabled = (id: string) => {
+    setServicesList(prev => prev.map(s => {
+      if (s.id === id) {
+        const newState = !s.enabled;
+        toast.success(`${s.name} ${newState ? 'enabled' : 'disabled'}`);
+        return { ...s, enabled: newState };
+      }
+      return s;
+    }));
+  };
+
   const ServiceForm = ({ onSubmit, submitLabel }: { onSubmit: () => void; submitLabel: string }) => (
     <div className="space-y-3 pt-2">
       <div><Label className="text-foreground">Name</Label><Input className="mt-1" value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} /></div>
@@ -90,7 +108,10 @@ const AdminServices = () => {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-foreground">Manage Services</h1>
+        <div>
+          <h1 className="text-2xl font-bold text-foreground">Manage Services</h1>
+          <p className="text-sm text-muted-foreground">{servicesList.filter(s => s.enabled).length} active / {servicesList.length} total</p>
+        </div>
         <Dialog onOpenChange={(open) => { if (open) resetForm(); }}>
           <DialogTrigger asChild>
             <Button className="bg-gradient-primary text-primary-foreground gap-2"><Plus className="h-4 w-4" /> Add Service</Button>
@@ -102,7 +123,6 @@ const AdminServices = () => {
         </Dialog>
       </div>
 
-      {/* Edit Dialog */}
       <Dialog open={editOpen} onOpenChange={setEditOpen}>
         <DialogContent className="bg-card border-border">
           <DialogHeader><DialogTitle className="text-foreground">Edit Service</DialogTitle></DialogHeader>
@@ -114,6 +134,7 @@ const AdminServices = () => {
         <Table>
           <TableHeader>
             <TableRow className="border-border hover:bg-transparent">
+              <TableHead className="text-muted-foreground w-[60px]">Active</TableHead>
               <TableHead className="text-muted-foreground">Service</TableHead>
               <TableHead className="text-muted-foreground">Category</TableHead>
               <TableHead className="text-muted-foreground">Price</TableHead>
@@ -124,7 +145,10 @@ const AdminServices = () => {
           </TableHeader>
           <TableBody>
             {servicesList.map(s => (
-              <TableRow key={s.id} className="border-border">
+              <TableRow key={s.id} className={`border-border ${!s.enabled ? 'opacity-50' : ''}`}>
+                <TableCell>
+                  <Switch checked={s.enabled} onCheckedChange={() => toggleEnabled(s.id)} />
+                </TableCell>
                 <TableCell>
                   <div className="flex items-center gap-2">
                     <span className="font-medium text-foreground">{s.name}</span>
