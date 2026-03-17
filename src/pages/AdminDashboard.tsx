@@ -50,20 +50,6 @@ const AdminDashboard = () => {
   const [announcementOpen, setAnnouncementOpen] = useState(false);
   const [announcement, setAnnouncement] = useState({ title: '', message: '' });
 
-  const handleExportCSV = () => {
-    const headers = ['Order ID', 'Client', 'Service', 'Quantity', 'Total', 'Status', 'Created'];
-    const rows = orders.map(o => [o.id, o.clientName, o.serviceName, o.quantity, o.totalPrice.toFixed(2), o.status, o.createdAt]);
-    const csv = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
-    const blob = new Blob([csv], { type: 'text/csv' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `orders-export-${new Date().toISOString().split('T')[0]}.csv`;
-    a.click();
-    URL.revokeObjectURL(url);
-    toast.success('Orders exported as CSV');
-  };
-
   const handleSendAnnouncement = () => {
     if (!announcement.title || !announcement.message) { toast.error('Fill in title and message'); return; }
     toast.success(`Announcement "${announcement.title}" sent to all clients`);
@@ -79,9 +65,6 @@ const AdminDashboard = () => {
           <p className="text-sm text-muted-foreground">Overview of your business metrics.</p>
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" className="gap-2" onClick={handleExportCSV}>
-            <Download className="h-4 w-4" /> Export CSV
-          </Button>
           <Dialog open={announcementOpen} onOpenChange={setAnnouncementOpen}>
             <DialogTrigger asChild>
               <Button size="sm" className="gap-2 bg-primary hover:bg-primary/90 text-primary-foreground">

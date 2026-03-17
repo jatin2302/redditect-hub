@@ -12,6 +12,8 @@ const DashboardLayout = ({ children }: { children: ReactNode }) => {
   const location = useLocation();
   const searchInputRef = useRef<HTMLInputElement>(null);
   
+  const isAdminRoute = location.pathname.startsWith('/admin');
+  
   // Simple breadcrumb generator
   const pathnames = location.pathname.split('/').filter((x) => x);
   
@@ -69,21 +71,23 @@ const DashboardLayout = ({ children }: { children: ReactNode }) => {
             </div>
             
             <div className="flex items-center gap-2 sm:gap-4 shrink-0">
-              {/* Wallet Chip */}
-              <motion.div 
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                className="hidden sm:flex items-center gap-2.5 bg-gradient-to-br from-secondary/50 to-secondary/30 hover:to-secondary/50 transition-all duration-200 rounded-xl px-4 py-2 border border-border/50 cursor-pointer shadow-sm group"
-              >
-                <div className="flex flex-col items-start leading-none gap-1">
-                  <span className="text-[10px] uppercase tracking-widest text-muted-foreground font-bold opacity-70 group-hover:opacity-100 transition-opacity">Balance</span>
-                  <span className="text-sm font-black text-foreground">$1,250.00</span>
-                </div>
-                <div className="h-6 w-[1px] bg-border/50 mx-1" />
-                <Button size="icon" variant="ghost" className="h-6 w-6 rounded-lg text-primary hover:bg-primary/10">
-                  <Plus className="h-4 w-4" />
-                </Button>
-              </motion.div>
+              {/* Wallet Chip - Only show for clients */}
+              {!isAdminRoute && (
+                <motion.div 
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  className="hidden sm:flex items-center gap-2.5 bg-gradient-to-br from-secondary/50 to-secondary/30 hover:to-secondary/50 transition-all duration-200 rounded-xl px-4 py-2 border border-border/50 cursor-pointer shadow-sm group"
+                >
+                  <div className="flex flex-col items-start leading-none gap-1">
+                    <span className="text-[10px] uppercase tracking-widest text-muted-foreground font-bold opacity-70 group-hover:opacity-100 transition-opacity">Balance</span>
+                    <span className="text-sm font-black text-foreground">$1,250.00</span>
+                  </div>
+                  <div className="h-6 w-[1px] bg-border/50 mx-1" />
+                  <Button size="icon" variant="ghost" className="h-6 w-6 rounded-lg text-primary hover:bg-primary/10">
+                    <Plus className="h-4 w-4" />
+                  </Button>
+                </motion.div>
+              )}
               
               {/* Notifications */}
               <Button variant="ghost" size="icon" className="relative h-10 w-10 rounded-xl hover:bg-secondary/80 border border-transparent hover:border-border/50 transition-all group">

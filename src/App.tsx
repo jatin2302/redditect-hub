@@ -20,6 +20,10 @@ import AdminClients from "./pages/AdminClients.tsx";
 import AdminTickets from "./pages/AdminTickets.tsx";
 import AdminSettings from "./pages/AdminSettings.tsx";
 import ClientDetailView from "./pages/ClientDetailView.tsx";
+import AdminDashboard from "./pages/AdminDashboard.tsx";
+import Login from "./pages/Login.tsx";
+import Register from "./pages/Register.tsx";
+import ForgotPassword from "./pages/ForgotPassword.tsx";
 
 const queryClient = new QueryClient();
 
@@ -35,6 +39,9 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <Routes>
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/" element={<Index />} />
             <Route path="/services" element={<LayoutWrap><ServicesPage /></LayoutWrap>} />
             <Route path="/new-order" element={<LayoutWrap><NewOrderPage /></LayoutWrap>} />
@@ -43,6 +50,7 @@ const App = () => (
             <Route path="/wallet" element={<LayoutWrap><WalletPage /></LayoutWrap>} />
             <Route path="/support" element={<LayoutWrap><SupportPage /></LayoutWrap>} />
             <Route path="/profile" element={<LayoutWrap><ClientProfile /></LayoutWrap>} />
+            <Route path="/admin/dashboard" element={<LayoutWrap><AdminDashboard /></LayoutWrap>} />
             <Route path="/admin/orders" element={<LayoutWrap><AdminOrders /></LayoutWrap>} />
             <Route path="/admin/orders/:orderId" element={<LayoutWrap><OrderDetailView /></LayoutWrap>} />
             <Route path="/admin/services" element={<LayoutWrap><AdminServices /></LayoutWrap>} />

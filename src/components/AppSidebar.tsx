@@ -61,7 +61,7 @@ const adminNavGroups: NavGroupType[] = [
   {
     group: 'Main',
     items: [
-      { title: 'Dashboard', url: '/', icon: LayoutDashboard },
+      { title: 'Dashboard', url: '/admin/dashboard', icon: LayoutDashboard },
     ]
   },
   {

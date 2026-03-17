@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Eye, Plus, Search, Filter } from 'lucide-react';
+import { Eye, Plus, Search, Filter, Download } from 'lucide-react';
 import { orders } from '@/lib/mock-data';
 import StatusBadge from '@/components/StatusBadge';
+import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
@@ -28,6 +29,31 @@ const ClientOrders = () => {
   if (isLoading) {
     return <LoadingScreen />;
   }
+
+  const handleExportCSV = () => {
+    if (filtered.length === 0) {
+      toast.error('No orders to export');
+      return;
+    }
+    const headers = ['Reference', 'Service', 'Quantity', 'Status', 'Progress', 'Date Placed'];
+    const rows = filtered.map(o => [
+      o.id, 
+      o.serviceName.replace(/,/g, ''), 
+      o.quantity || 'Variable', 
+      o.status, 
+      `${o.progress}%`, 
+      new Date(o.createdAt).toLocaleDateString()
+    ]);
+    const csv = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `my-orders-${new Date().toISOString().split('T')[0]}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+    toast.success(`Exported ${filtered.length} orders`);
+  };
 
   const container = {
     hidden: { opacity: 0 },
@@ -59,6 +85,9 @@ const ClientOrders = () => {
               className="pl-10 w-full sm:w-[300px] bg-card border-border/60 focus:border-primary/50 focus:ring-primary/10 rounded-xl"
             />
           </div>
+          <Button variant="outline" className="gap-2 h-10 px-4 rounded-xl font-bold" onClick={handleExportCSV}>
+            <Download className="h-4 w-4" /> Export CSV
+          </Button>
           <Button className="bg-primary hover:bg-primary/90 text-white shadow-glow gap-2 h-10 px-6 rounded-xl font-bold" asChild>
             <Link to="/new-order">
               <Plus className="h-4 w-4 bg-white/20 rounded-full p-0.5" /> New Order

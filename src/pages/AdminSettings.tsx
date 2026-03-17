@@ -30,8 +30,27 @@ const AdminSettings = () => {
     btc: true, eth: true, usdt: true, ltc: false, sol: false,
   });
 
+  const [settings, setSettings] = useState({
+    panelName: 'RedditBoost',
+    supportEmail: 'support@redditboost.com',
+    currency: 'USD',
+    minDeposit: '10',
+    maxDeposit: '5000',
+    siteTitle: 'RedditBoost — #1 Reddit Marketing Services',
+    metaDesc: 'Grow your Reddit presence with premium marketing services.',
+    metaKeywords: 'reddit marketing, subreddit growth, reddit upvotes',
+    canonicalUrl: 'https://redditboost.com',
+    ogImage: 'https://redditboost.com/og-image.png',
+    gaId: '',
+    gsc: ''
+  });
+
   const togglePayment = (id: string) => {
     setEnabledPayments(prev => ({ ...prev, [id]: !prev[id] }));
+  };
+
+  const handleSettingChange = (key: keyof typeof settings, value: string) => {
+    setSettings(prev => ({ ...prev, [key]: value }));
   };
 
   return (
@@ -53,9 +72,9 @@ const AdminSettings = () => {
               <p className="text-sm text-muted-foreground">Configure your panel settings.</p>
             </div>
             <div className="space-y-4">
-              <div><Label className="text-foreground">Panel Name</Label><Input defaultValue="RedditBoost" className="mt-1" /></div>
-              <div><Label className="text-foreground">Support Email</Label><Input defaultValue="support@redditboost.com" className="mt-1" /></div>
-              <div><Label className="text-foreground">Currency</Label><Input defaultValue="USD" className="mt-1" /></div>
+              <div><Label className="text-foreground">Panel Name</Label><Input value={settings.panelName} onChange={(e) => handleSettingChange('panelName', e.target.value)} className="mt-1" /></div>
+              <div><Label className="text-foreground">Support Email</Label><Input value={settings.supportEmail} onChange={(e) => handleSettingChange('supportEmail', e.target.value)} className="mt-1" /></div>
+              <div><Label className="text-foreground">Currency</Label><Input value={settings.currency} onChange={(e) => handleSettingChange('currency', e.target.value)} className="mt-1" /></div>
             </div>
 
             <Separator className="bg-border" />
@@ -84,8 +103,8 @@ const AdminSettings = () => {
               <h2 className="text-lg font-semibold text-foreground">Deposit Limits</h2>
             </div>
             <div className="space-y-4">
-              <div><Label className="text-foreground">Minimum Deposit</Label><Input defaultValue="10" type="number" className="mt-1" /></div>
-              <div><Label className="text-foreground">Maximum Deposit</Label><Input defaultValue="5000" type="number" className="mt-1" /></div>
+              <div><Label className="text-foreground">Minimum Deposit</Label><Input value={settings.minDeposit} onChange={(e) => handleSettingChange('minDeposit', e.target.value)} type="number" className="mt-1" /></div>
+              <div><Label className="text-foreground">Maximum Deposit</Label><Input value={settings.maxDeposit} onChange={(e) => handleSettingChange('maxDeposit', e.target.value)} type="number" className="mt-1" /></div>
             </div>
 
             <Button className="bg-gradient-primary text-primary-foreground hover:opacity-90" onClick={() => toast.success('Settings saved!')}>
@@ -159,25 +178,25 @@ const AdminSettings = () => {
             <div className="space-y-4">
               <div>
                 <Label className="text-foreground">Site Title</Label>
-                <Input defaultValue="RedditBoost — #1 Reddit Marketing Services" className="mt-1" />
+                <Input value={settings.siteTitle} onChange={(e) => handleSettingChange('siteTitle', e.target.value)} className="mt-1" />
                 <p className="text-xs text-muted-foreground mt-1">Recommended: under 60 characters</p>
               </div>
               <div>
                 <Label className="text-foreground">Meta Description</Label>
-                <Input defaultValue="Grow your Reddit presence with premium marketing services. Subreddit members, upvotes, content creation, and more." className="mt-1" />
+                <Input value={settings.metaDesc} onChange={(e) => handleSettingChange('metaDesc', e.target.value)} className="mt-1" />
                 <p className="text-xs text-muted-foreground mt-1">Recommended: under 160 characters</p>
               </div>
               <div>
                 <Label className="text-foreground">Meta Keywords</Label>
-                <Input defaultValue="reddit marketing, subreddit growth, reddit upvotes, reddit promotion, social media marketing" className="mt-1" />
+                <Input value={settings.metaKeywords} onChange={(e) => handleSettingChange('metaKeywords', e.target.value)} className="mt-1" />
               </div>
               <div>
                 <Label className="text-foreground">Canonical URL</Label>
-                <Input defaultValue="https://redditboost.com" className="mt-1" />
+                <Input value={settings.canonicalUrl} onChange={(e) => handleSettingChange('canonicalUrl', e.target.value)} className="mt-1" />
               </div>
               <div>
                 <Label className="text-foreground">OG Image URL</Label>
-                <Input defaultValue="https://redditboost.com/og-image.png" className="mt-1" />
+                <Input value={settings.ogImage} onChange={(e) => handleSettingChange('ogImage', e.target.value)} className="mt-1" />
               </div>
 
               <Separator className="bg-border" />
@@ -204,11 +223,11 @@ const AdminSettings = () => {
 
               <div>
                 <Label className="text-foreground">Google Analytics Tracking ID</Label>
-                <Input placeholder="G-XXXXXXXXXX" className="mt-1" />
+                <Input value={settings.gaId} onChange={(e) => handleSettingChange('gaId', e.target.value)} placeholder="G-XXXXXXXXXX" className="mt-1" />
               </div>
               <div>
                 <Label className="text-foreground">Google Search Console Verification</Label>
-                <Input placeholder="Verification meta tag content" className="mt-1" />
+                <Input value={settings.gsc} onChange={(e) => handleSettingChange('gsc', e.target.value)} placeholder="Verification meta tag content" className="mt-1" />
               </div>
             </div>
 

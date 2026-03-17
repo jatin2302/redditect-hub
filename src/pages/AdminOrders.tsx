@@ -25,11 +25,12 @@ const AdminOrders = () => {
   const [serviceFilter, setServiceFilter] = useState<string>('all');
   const [dateFilter, setDateFilter] = useState<string>('all');
   const [search, setSearch] = useState('');
+  const [orderData, setOrderData] = useState(orders);
   const [selectedOrders, setSelectedOrders] = useState<string[]>([]);
 
-  const uniqueServices = [...new Set(orders.map(o => o.serviceName))];
+  const uniqueServices = [...new Set(orderData.map(o => o.serviceName))];
 
-  const filtered = orders.filter(o => {
+  const filtered = orderData.filter(o => {
     if (statusFilter !== 'all' && o.status !== statusFilter) return false;
     if (serviceFilter !== 'all' && o.serviceName !== serviceFilter) return false;
     if (search && !o.id.toLowerCase().includes(search.toLowerCase()) && !o.clientName.toLowerCase().includes(search.toLowerCase())) return false;
@@ -60,7 +61,15 @@ const AdminOrders = () => {
 
   const handleBulkAction = (action: string) => {
     if (selectedOrders.length === 0) { toast.error('No orders selected'); return; }
-    toast.success(`${selectedOrders.length} order(s) marked as ${action}`);
+    
+    setOrderData(prev => prev.map(o => {
+      if (selectedOrders.includes(o.id)) {
+        return { ...o, status: action as any };
+      }
+      return o;
+    }));
+    
+    toast.success(`${selectedOrders.length} order(s) marked as ${action.replace('_', ' ')}`);
     setSelectedOrders([]);
   };
 
